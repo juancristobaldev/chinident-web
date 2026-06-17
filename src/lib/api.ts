@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/stores/auth-store";
 
-const API_URL = " https://chinident-api.argoz.cl/api";
+const API_URL = "https://chinident-api.argoz.cl/api";
 
 class ApiClient {
   private baseUrl: string;

@@ -11,6 +11,11 @@ import { useAuthStore, ROLE_ROUTES } from "@/stores/auth-store";
 import { ToothIcon } from "@/components/ui/tooth-icon";
 import Link from "next/link";
 
+function getRolePrefix(role: string): string {
+  const route = ROLE_ROUTES[role as keyof typeof ROLE_ROUTES] || "";
+  return route.split("/")[1] || "";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const { login, checkAuth, user, isAuthenticated, isLoading } = useAuthStore();
@@ -18,6 +23,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect");
+      if (redirect) setRedirectTo(redirect);
+    } catch {}
+  }, []);
 
   useEffect(() => { checkAuth(); }, []);
 
@@ -28,9 +42,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated && user) {
-      router.replace(ROLE_ROUTES[user.role]);
+      const rolePrefix = getRolePrefix(user.role);
+      const target = redirectTo && redirectTo.startsWith(`/${rolePrefix}`)
+        ? redirectTo
+        : ROLE_ROUTES[user.role];
+      router.replace(target);
     }
-  }, [isLoading, isAuthenticated, user]);
+  }, [isLoading, isAuthenticated, user, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +56,11 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       const u = await login(email, password);
-      router.replace(ROLE_ROUTES[u.role]);
+      const rolePrefix = getRolePrefix(u.role);
+      const target = redirectTo && redirectTo.startsWith(`/${rolePrefix}`)
+        ? redirectTo
+        : ROLE_ROUTES[u.role];
+      router.replace(target);
     } catch (err: any) {
       setError(err.message || "Credenciales inválidas");
     } finally {
@@ -54,7 +76,16 @@ export default function LoginPage() {
     );
   }
 
-  if (isAuthenticated) return null;
+  if (isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <Spinner className="mx-auto h-8 w-8" />
+          <p className="mt-4 text-muted-foreground">Redirigiendo...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4">
