@@ -10,7 +10,7 @@ import {
   BarChart3,
   LogOut,
 } from "lucide-react";
-import { ToothIcon } from "@/components/ui/tooth-icon";
+import { ToothIcon} from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import { useAuthStore } from "@/stores/auth-store";
 
