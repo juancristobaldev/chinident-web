@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import {
   PERMANENT_TEETH_UPPER_RIGHT, PERMANENT_TEETH_UPPER_LEFT,
   PERMANENT_TEETH_LOWER_RIGHT, PERMANENT_TEETH_LOWER_LEFT,
+  DECIDUOUS_TEETH_UPPER_RIGHT, DECIDUOUS_TEETH_UPPER_LEFT,
+  DECIDUOUS_TEETH_LOWER_RIGHT, DECIDUOUS_TEETH_LOWER_LEFT,
   PROCEDURE_COLORS, TOOTH_NAMES,
   type OdontogramItem, type ToothSurface, type DentalProcedure,
 } from "./odontogram-types";
@@ -45,12 +47,12 @@ export function OdontogramSVG({
     itemsByTooth.get(toothCode)?.find((i) => i.surface === surface);
 
   const upperTeeth = showDeciduous
-    ? ([] as number[])
+    ? [...DECIDUOUS_TEETH_UPPER_RIGHT, ...DECIDUOUS_TEETH_UPPER_LEFT]
     : [...PERMANENT_TEETH_UPPER_RIGHT, ...PERMANENT_TEETH_UPPER_LEFT];
 
   const lowerTeeth = showDeciduous
-    ? ([] as number[])
-    : [...PERMANENT_TEETH_LOWER_LEFT, ...PERMANENT_TEETH_LOWER_RIGHT];
+    ? [...DECIDUOUS_TEETH_LOWER_RIGHT, ...DECIDUOUS_TEETH_LOWER_LEFT]
+    : [...PERMANENT_TEETH_LOWER_RIGHT, ...PERMANENT_TEETH_LOWER_LEFT];
 
   const calcX = (index: number) => index * (TOOTH_W + GAP);
   const totalWidth = Math.max(upperTeeth.length, lowerTeeth.length) * (TOOTH_W + GAP);

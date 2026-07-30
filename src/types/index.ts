@@ -47,6 +47,7 @@ export interface Dentist {
   id: string;
   userId: string;
   tenantId: string;
+  rut: string | null;
   specialty: string | null;
   licenseNumber: string | null;
   isActive: boolean;

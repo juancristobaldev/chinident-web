@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Calendar, DollarSign, TrendingUp, Stethoscope, ExternalLink } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Users, Calendar, DollarSign, TrendingUp, Stethoscope, ExternalLink, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
-import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface OwnerStats {
   activePatients: number;
@@ -38,28 +39,42 @@ export default function OwnerDashboard() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[200px] items-center justify-center">
-        <Spinner className="h-8 w-8" />
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div>
+          <Skeleton className="h-10 w-64 mb-2" />
+          <Skeleton className="h-5 w-48" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Skeleton className="h-[300px] rounded-xl" />
+          <Skeleton className="h-[300px] rounded-xl" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Resumen de tu clínica</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+          Dashboard <Building2 className="h-6 w-6 text-blue-500" />
+        </h1>
+        <p className="text-muted-foreground mt-1">Resumen general de tu clínica</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {cards.map(({ title, value, icon: Icon }) => (
-          <Card key={title}>
+          <Card key={title} className="group transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-blue-500/30">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">{title}</CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+              <div className="bg-blue-500/10 p-2 rounded-lg group-hover:bg-blue-500/20 transition-colors">
+                <Icon className="h-4 w-4 text-blue-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{value}</div>
+              <div className="text-3xl font-bold tracking-tight text-foreground">{value}</div>
             </CardContent>
           </Card>
         ))}
@@ -67,28 +82,30 @@ export default function OwnerDashboard() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {stats?.topDentists && stats.topDentists.length > 0 && (
-          <Card>
+          <Card className="shadow-sm border-border/50">
             <CardHeader>
-              <CardTitle className="text-lg">Dentistas más activos</CardTitle>
+              <CardTitle className="text-lg font-bold">Dentistas más activos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {stats.topDentists.map((d, i) => (
                   <div
                     key={d.id}
-                    className="flex items-center justify-between rounded-md border px-3 py-2 text-sm cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="flex items-center justify-between rounded-lg border border-border/50 bg-background px-4 py-3 text-sm cursor-pointer hover:bg-muted/50 hover:border-border transition-all"
                     onClick={() => router.push(`/owner/dentists/${d.id}`)}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-muted-foreground w-4">{i + 1}</span>
-                      <span className="flex items-center gap-2">
-                        <Stethoscope className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
+                        {i + 1}
+                      </div>
+                      <span className="flex items-center gap-2 font-medium">
+                        <Stethoscope className="h-4 w-4 text-emerald-500" />
                         {d.name}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">{d.appointments} atenciones</span>
-                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center gap-3">
+                      <span className="text-muted-foreground font-medium">{d.appointments} atenciones</span>
+                      <ExternalLink className="h-4 w-4 text-muted-foreground/50" />
                     </div>
                   </div>
                 ))}
@@ -98,19 +115,24 @@ export default function OwnerDashboard() {
         )}
 
         {stats?.topTreatments && stats.topTreatments.length > 0 && (
-          <Card>
+          <Card className="shadow-sm border-border/50">
             <CardHeader>
-              <CardTitle className="text-lg">Tratamientos más frecuentes</CardTitle>
+              <CardTitle className="text-lg font-bold">Tratamientos más frecuentes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {stats.topTreatments.map((t, i) => (
-                  <div key={t.name} className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-muted-foreground w-4">{i + 1}</span>
-                      <span>{t.name}</span>
+                  <div key={t.name} className="flex items-center justify-between rounded-lg border border-border/50 bg-background px-4 py-3 text-sm">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
+                        {i + 1}
+                      </div>
+                      <span className="font-medium">{t.name}</span>
                     </div>
-                    <span className="text-muted-foreground">{t.count}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-foreground">{t.count}</span>
+                      <span className="text-muted-foreground text-xs">veces</span>
+                    </div>
                   </div>
                 ))}
               </div>

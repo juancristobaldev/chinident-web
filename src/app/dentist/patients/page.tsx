@@ -133,8 +133,8 @@ export default function DentistPatientsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="rut">RUT</Label>
-                  <Input id="rut" placeholder="12345678-9" value={form.rut} onChange={(e) => setForm({ ...form, rut: e.target.value })} />
+                  <Label htmlFor="rut">RUT *</Label>
+                  <Input id="rut" placeholder="12345678-9" required value={form.rut} onChange={(e) => setForm({ ...form, rut: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="dob">Fecha Nacimiento</Label>

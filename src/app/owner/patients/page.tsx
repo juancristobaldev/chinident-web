@@ -18,7 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { getInitials } from "@/lib/utils";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 
 type LocaleOption = { id: string; name: string };
 type DentistOption = { id: string; user: { firstName: string; lastName: string } };
@@ -32,10 +32,12 @@ export default function PatientsPage() {
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [localeSearch, setLocaleSearch] = useState("");
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "",
     rut: "", dob: "", sex: "", address: "",
     emergencyContact: "", emergencyPhone: "", bloodType: "",
+    occupation: "", referredBy: "",
     dentistId: "", localeIds: [] as string[],
   });
 
@@ -58,7 +60,12 @@ export default function PatientsPage() {
   };
 
   const openCreate = () => {
-    setForm({ firstName: "", lastName: "", email: "", phone: "", rut: "", dob: "", sex: "", address: "", emergencyContact: "", emergencyPhone: "", bloodType: "", dentistId: "", localeIds: [] });
+    setForm({
+      firstName: "", lastName: "", email: "", phone: "", rut: "", dob: "",
+      sex: "", address: "", emergencyContact: "", emergencyPhone: "", bloodType: "",
+      occupation: "", referredBy: "", dentistId: "", localeIds: [],
+    });
+    setLocaleSearch("");
     setDialogOpen(true);
   };
 
@@ -71,6 +78,11 @@ export default function PatientsPage() {
     }));
   };
 
+  const filteredLocales = locales.filter((l) =>
+    l.name.toLowerCase().includes(localeSearch.toLowerCase())
+  );
+  const selectedLocales = locales.filter((l) => form.localeIds.includes(l.id));
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -82,6 +94,7 @@ export default function PatientsPage() {
         localeIds: form.localeIds.length ? form.localeIds : undefined,
       };
       await api.post("/patients", payload);
+      toast.success("Paciente creado exitosamente");
       setDialogOpen(false);
       fetchAll();
     } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
@@ -95,9 +108,12 @@ export default function PatientsPage() {
         </div>
         <div>
           <p className="font-medium">{p.displayName || `${p.firstName || p.user?.firstName || ""} ${p.lastName || p.user?.lastName || ""}`}</p>
-          <p className="text-xs text-muted-foreground">{p.rut || "Sin RUT"}</p>
+          <p className="text-xs text-muted-foreground">{p.user?.email || "Sin email"}</p>
         </div>
       </div>
+    )},
+    { key: "rut", header: "RUT", render: (p: any) => (
+      <span className="font-mono text-sm">{p.rut || "-"}</span>
     )},
     { key: "locales", header: "Locales", render: (p: any) =>
       p.locales?.map((pl: any) => pl.locale.name).join(", ") || "-"
@@ -126,104 +142,147 @@ export default function PatientsPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Nuevo Paciente</DialogTitle></DialogHeader>
-            <form onSubmit={handleSave} className="space-y-4 pt-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">Nombre *</Label>
-                  <Input id="firstName" required value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Apellido *</Label>
-                  <Input id="lastName" required value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="rut">RUT</Label>
-                  <Input id="rut" placeholder="12345678-9" value={form.rut} onChange={(e) => setForm({ ...form, rut: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dob">Fecha Nacimiento</Label>
-                  <Input id="dob" type="date" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Teléfono</Label>
-                  <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <form onSubmit={handleSave} className="space-y-5 pt-2">
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Identificación</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="rut">RUT *</Label>
+                    <Input id="rut" placeholder="12345678-9" required value={form.rut} onChange={(e) => setForm({ ...form, rut: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="sex">Sexo</Label>
-                  <select
-                    id="sex"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={form.sex}
-                    onChange={(e) => setForm({ ...form, sex: e.target.value })}
-                  >
-                    <option value="">Seleccionar</option>
-                    <option value="M">Masculino</option>
-                    <option value="F">Femenino</option>
-                    <option value="O">Otro</option>
-                  </select>
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Datos Personales</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Nombre *</Label>
+                    <Input id="firstName" required value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Apellido *</Label>
+                    <Input id="lastName" required value={form.lastName} onChange={(e) => setForm({ ...form, lastName: e.target.value })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Teléfono</Label>
+                    <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dob">Fecha Nacimiento</Label>
+                    <Input id="dob" type="date" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="sex">Sexo</Label>
+                    <select
+                      id="sex"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.sex}
+                      onChange={(e) => setForm({ ...form, sex: e.target.value })}
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="M">Masculino</option>
+                      <option value="F">Femenino</option>
+                      <option value="O">Otro</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="bloodType">Grupo Sanguíneo</Label>
+                    <Input id="bloodType" value={form.bloodType} onChange={(e) => setForm({ ...form, bloodType: e.target.value })} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="occupation">Ocupación</Label>
+                    <Input id="occupation" value={form.occupation} onChange={(e) => setForm({ ...form, occupation: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="referredBy">Referido por</Label>
+                    <Input id="referredBy" value={form.referredBy} onChange={(e) => setForm({ ...form, referredBy: e.target.value })} />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bloodType">Grupo Sanguíneo</Label>
-                  <Input id="bloodType" value={form.bloodType} onChange={(e) => setForm({ ...form, bloodType: e.target.value })} />
+                  <Label htmlFor="address">Dirección</Label>
+                  <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="address">Dirección</Label>
-                <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Contacto de Emergencia</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyContact">Nombre</Label>
+                    <Input id="emergencyContact" value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyPhone">Teléfono</Label>
+                    <Input id="emergencyPhone" value={form.emergencyPhone} onChange={(e) => setForm({ ...form, emergencyPhone: e.target.value })} />
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>Asignar a Locales</Label>
-                  {locales.length === 0 ? (
-                    <p className="text-xs text-muted-foreground mt-1">No tienes locales creados</p>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-1 max-h-24 overflow-y-auto rounded-md border p-2">
-                      {locales.map((l) => (
-                        <label key={l.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted/50 rounded px-1.5 py-1">
-                          <input
-                            type="checkbox"
-                            checked={form.localeIds.includes(l.id)}
-                            onChange={() => toggleLocale(l.id)}
-                            className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-primary"
-                          />
-                          {l.name}
-                        </label>
+              <div className="space-y-3">
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Asignaciones</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label>Locales</Label>
+                    {locales.length === 0 ? (
+                      <p className="text-xs text-muted-foreground mt-1">No tienes locales creados</p>
+                    ) : (
+                      <>
+                        <div className="relative">
+                          <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input placeholder="Filtrar..." className="pl-7 h-8 text-xs" value={localeSearch} onChange={(e) => setLocaleSearch(e.target.value)} />
+                        </div>
+                        {selectedLocales.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {selectedLocales.map((l) => (
+                              <span key={l.id} className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                                {l.name}
+                                <button type="button" onClick={() => toggleLocale(l.id)} className="ml-0.5 rounded-full hover:bg-primary/20"><X className="h-2.5 w-2.5" /></button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-1 max-h-24 overflow-y-auto rounded-md border p-2">
+                          {filteredLocales.map((l) => (
+                            <label key={l.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted/50 rounded px-1.5 py-1">
+                              <input type="checkbox" checked={form.localeIds.includes(l.id)} onChange={() => toggleLocale(l.id)} className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-primary" />
+                              {l.name}
+                            </label>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dentistId">Dentista asignado</Label>
+                    <select
+                      id="dentistId"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.dentistId}
+                      onChange={(e) => setForm({ ...form, dentistId: e.target.value })}
+                    >
+                      <option value="">Ninguno</option>
+                      {dentists.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.user?.firstName} {d.user?.lastName}
+                        </option>
                       ))}
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dentistId">Dentista asignado</Label>
-                  <select
-                    id="dentistId"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    value={form.dentistId}
-                    onChange={(e) => setForm({ ...form, dentistId: e.target.value })}
-                  >
-                    <option value="">Ninguno</option>
-                    {dentists.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.user?.firstName} {d.user?.lastName}
-                      </option>
-                    ))}
-                  </select>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 pt-2 border-t">
                 <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
                 <Button type="submit" disabled={saving}>{saving ? <Spinner className="mr-2" /> : null} Guardar</Button>
               </div>

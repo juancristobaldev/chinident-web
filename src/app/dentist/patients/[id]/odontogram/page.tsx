@@ -302,7 +302,7 @@ const OdontogramGrid = () => {
         <span>Derecha</span>
         <span>Izquierda</span>
       </div>
-      <div className="flex justify-center gap-1 mb-8 w-full max-w-5xl overflow-x-auto pb-4">
+      <div className="flex justify-start gap-1 mb-8 w-full overflow-x-auto pb-4">
         <div className="flex gap-1 pr-4 border-r-2 border-slate-200">
           {UpperRow.slice(0, UpperRow.length / 2).map((num) => <Tooth key={num} number={num} />)}
         </div>
@@ -310,7 +310,7 @@ const OdontogramGrid = () => {
           {UpperRow.slice(UpperRow.length / 2).map((num) => <Tooth key={num} number={num} />)}
         </div>
       </div>
-      <div className="flex justify-center gap-1 w-full max-w-5xl overflow-x-auto pb-4">
+      <div className="flex justify-start gap-1 w-full overflow-x-auto pb-4">
         <div className="flex gap-1 pr-4 border-r-2 border-slate-200">
           {LowerRow.slice(0, LowerRow.length / 2).map((num) => <Tooth key={num} number={num} />)}
         </div>

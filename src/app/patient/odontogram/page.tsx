@@ -135,11 +135,11 @@ const OdontogramGrid = ({ dentition, pieces }: { dentition: DentitionType; piece
   return (
     <div className="flex flex-col items-center w-full p-8 bg-white rounded-xl shadow-sm border border-slate-200">
       <div className="flex justify-between w-full max-w-4xl mb-4 text-xs font-semibold text-slate-400"><span>Derecha</span><span>Izquierda</span></div>
-      <div className="flex justify-center gap-1 mb-8 w-full max-w-5xl overflow-x-auto pb-4">
+      <div className="flex justify-start gap-1 mb-8 w-full overflow-x-auto pb-4">
         <div className="flex gap-1 pr-4 border-r-2 border-slate-200">{UpperRow.slice(0, UpperRow.length / 2).map((num) => <Tooth key={num} number={num} pieces={pieces} />)}</div>
         <div className="flex gap-1 pl-4">{UpperRow.slice(UpperRow.length / 2).map((num) => <Tooth key={num} number={num} pieces={pieces} />)}</div>
       </div>
-      <div className="flex justify-center gap-1 w-full max-w-5xl overflow-x-auto pb-4">
+      <div className="flex justify-start gap-1 w-full overflow-x-auto pb-4">
         <div className="flex gap-1 pr-4 border-r-2 border-slate-200">{LowerRow.slice(0, LowerRow.length / 2).map((num) => <Tooth key={num} number={num} pieces={pieces} />)}</div>
         <div className="flex gap-1 pl-4">{LowerRow.slice(LowerRow.length / 2).map((num) => <Tooth key={num} number={num} pieces={pieces} />)}</div>
       </div>

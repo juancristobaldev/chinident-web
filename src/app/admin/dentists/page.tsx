@@ -58,6 +58,11 @@ export default function DentistsPage() {
       render: (d: any) => d.licenseNumber || "-",
     },
     {
+      key: "rut",
+      header: "RUT",
+      render: (d: any) => d.rut || "-",
+    },
+    {
       key: "isActive",
       header: "Estado",
       render: (d: any) => <StatusBadge status={d.isActive ? "active" : "inactive"} />,

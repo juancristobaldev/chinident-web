@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
-import { Calendar, CheckCircle, Clock, Activity, Users } from "lucide-react";
+import { Calendar, CheckCircle, Clock, Activity, Users, Stethoscope } from "lucide-react";
 import { toast } from "sonner";
 
 interface DentistStats {
@@ -37,25 +37,39 @@ export default function DentistDashboardPage() {
   ];
 
   if (loading) {
-    return <div className="flex min-h-[200px] items-center justify-center"><Spinner className="h-8 w-8" /></div>;
+    return (
+      <div className="space-y-8 animate-in fade-in duration-500">
+        <div>
+          <Skeleton className="h-10 w-64 mb-2" />
+          <Skeleton className="h-5 w-48" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Resumen de tu actividad</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+          Dashboard <Stethoscope className="h-6 w-6 text-emerald-500" />
+        </h1>
+        <p className="text-muted-foreground mt-1">Resumen de tu actividad clínica</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {cards.map(({ title, value, icon: Icon }) => (
-          <Card key={title}>
+          <Card key={title} className="group transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-emerald-500/30">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">{title}</CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+              <div className="bg-emerald-500/10 p-2 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
+                <Icon className="h-4 w-4 text-emerald-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{value}</div>
+              <div className="text-3xl font-bold tracking-tight text-foreground">{value}</div>
             </CardContent>
           </Card>
         ))}

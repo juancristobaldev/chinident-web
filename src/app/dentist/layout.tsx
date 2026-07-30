@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore, ROLE_ROUTES } from "@/stores/auth-store";
 import { DentistSidebar } from "@/components/layouts/dentist-sidebar";
 import { ThemeSwitcher } from "@/components/layouts/theme-switcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { getInitials, cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
+import { PanelLeftClose, PanelLeft } from "lucide-react";
 
 export default function DentistLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading, checkAuth } = useAuthStore();
   const router = useRouter();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -36,25 +39,39 @@ export default function DentistLayout({ children }: { children: React.ReactNode 
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <aside className="w-64 shrink-0">
-        <DentistSidebar />
+    <div className="flex h-screen overflow-hidden bg-background selection:bg-primary/20">
+      <aside 
+        className={cn(
+          "shrink-0 shadow-[1px_0_15px_rgba(0,0,0,0.03)] z-20 transition-all duration-300 ease-in-out border-r",
+          isCollapsed ? "w-[80px]" : "w-64"
+        )}
+      >
+        <DentistSidebar 
+          isCollapsed={isCollapsed} 
+          onToggle={() => setIsCollapsed(!isCollapsed)} 
+        />
       </aside>
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b px-6">
-          <h2 className="text-sm font-medium text-muted-foreground">
-            Panel de Dentista
-          </h2>
-          <div className="flex items-center gap-3">
+        <header className="flex h-16 shrink-0 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 md:px-8 z-10 transition-all duration-300">
+          <div className="flex items-center gap-4">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider hidden sm:block">
+              Panel de Dentista
+            </h2>
+          </div>
+          <div className="flex items-center gap-4">
             <ThemeSwitcher />
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">
+            <Avatar className="h-9 w-9 shadow-sm border border-border/50 transition-transform hover:scale-105 cursor-pointer">
+              <AvatarFallback className="text-xs bg-emerald-500/10 text-emerald-600 font-bold">
                 {getInitials(user.firstName, user.lastName)}
               </AvatarFallback>
             </Avatar>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-muted/10 p-8 scrollbar-thin">
+          <div className="mx-auto max-w-7xl">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
