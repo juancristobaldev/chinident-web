@@ -32,8 +32,8 @@ function ResetPasswordForm() {
     try {
       await api.post("/auth/reset-password", { token, password });
       setDone(true);
-    } catch {
-      toast.error("Error al restablecer la contraseña");
+    } catch (e: any) {
+      toast.error(e.message || "Error al restablecer la contraseña");
     } finally {
       setLoading(false);
     }

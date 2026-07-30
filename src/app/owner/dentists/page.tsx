@@ -36,8 +36,8 @@ export default function DentistsPage() {
   });
 
   const fetchAll = async () => {
-    try { const d = await api.get<any[]>("/dentists"); setDentists(d); } catch { toast.error("Error al cargar datos"); }
-    try { const l = await api.get<any[]>("/locales"); setLocales(l); } catch { toast.error("Error al cargar datos"); }
+    try { const d = await api.get<any[]>("/dentists"); setDentists(d); } catch (e: any) { toast.error(e.message || "Error al cargar datos"); }
+    try { const l = await api.get<any[]>("/locales"); setLocales(l); } catch (e: any) { toast.error(e.message || "Error al cargar datos"); }
     setLoading(false);
   };
 
@@ -80,7 +80,7 @@ export default function DentistsPage() {
       toast.success("Dentista creado exitosamente");
       setDialogOpen(false);
       fetchAll();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const toggleActive = async (id: string) => {
@@ -88,7 +88,7 @@ export default function DentistsPage() {
       await api.post(`/dentists/${id}/toggle-active`);
       toast.success("Estado actualizado");
       fetchAll();
-    } catch { toast.error("Error al cambiar estado"); }
+    } catch (e: any) { toast.error(e.message || "Error al cambiar estado"); }
   };
 
   const columns = [

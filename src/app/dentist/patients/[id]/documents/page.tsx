@@ -52,8 +52,8 @@ export default function DocumentsPage() {
     try {
       const data = await api.get<Attachment[]>(`/attachments/patient/${id}`);
       setDocuments(data);
-    } catch {
-      toast.error("Error al cargar documentos");
+    } catch (e: any) {
+      toast.error(e.message || "Error al cargar documentos");
       setDocuments([]);
     } finally {
       setLoading(false);
@@ -77,8 +77,8 @@ export default function DocumentsPage() {
       setForm(INITIAL_FORM);
       setDialogOpen(false);
       fetchDocuments();
-    } catch {
-      toast.error("Error al guardar documento");
+    } catch (e: any) {
+      toast.error(e.message || "Error al guardar documento");
     } finally {
       setSaving(false);
     }
@@ -89,8 +89,8 @@ export default function DocumentsPage() {
       await api.delete(`/attachments/${documentId}`);
       toast.success("Documento eliminado");
       fetchDocuments();
-    } catch {
-      toast.error("Error al eliminar documento");
+    } catch (e: any) {
+      toast.error(e.message || "Error al eliminar documento");
     }
   };
 

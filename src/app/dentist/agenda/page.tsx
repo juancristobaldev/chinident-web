@@ -60,7 +60,8 @@ export default function DentistAgendaPage() {
       ]);
       setSummary(sum.byStatus);
       setAppointments(apps);
-    } catch {
+    } catch (e: any) {
+      toast.error(e.message || "Error al cargar agenda");
       setSummary(null);
       setAppointments([]);
     } finally {

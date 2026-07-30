@@ -98,8 +98,8 @@ export default function SettingsPage() {
         useAuthStore.getState().setUser({ ...user, themeColor: form.themeColor });
       }
       toast.success("Configuración guardada");
-    } catch {
-      toast.error("Error al guardar");
+    } catch (e: any) {
+      toast.error(e.message || "Error al guardar");
     } finally {
       setSaving(false);
     }

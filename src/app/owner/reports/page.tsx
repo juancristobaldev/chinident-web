@@ -32,30 +32,29 @@ export default function ReportsPage() {
     async function fetchData() {
       try {
         const dentists = await api.get<any[]>("/dentists");
-        const statsList: DentistStat[] = [];
-
-        for (const d of dentists) {
+        const statsPromises = dentists.map(async (d) => {
           try {
             const stats = await api.get<{
               totalAppointments: number;
               uniquePatients: number;
               treatmentPlans: number;
             }>(`/dentists/${d.id}/stats`);
-            statsList.push({
+            return {
               id: d.id,
               name: `${d.user?.firstName} ${d.user?.lastName}`,
               ...stats,
-            });
+            };
           } catch {
-            statsList.push({
+            return {
               id: d.id,
               name: `${d.user?.firstName} ${d.user?.lastName}`,
               totalAppointments: 0,
               uniquePatients: 0,
               treatmentPlans: 0,
-            });
+            };
           }
-        }
+        });
+        const statsList = await Promise.all(statsPromises);
         setDentistStats(statsList);
 
         const now = new Date();
@@ -82,7 +81,7 @@ export default function ReportsPage() {
           thisMonth: monthApps.length,
           byStatus,
         });
-      } catch { toast.error("Error al cargar datos"); }
+      } catch (e: any) { toast.error(e.message || "Error al cargar datos"); }
       setLoading(false);
     }
     fetchData();

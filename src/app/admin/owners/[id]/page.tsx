@@ -64,7 +64,7 @@ export default function OwnerDetailPage() {
       setEditOpen(false);
       const updated = await api.get(`/admin/tenants/${id}`);
       setTenant(updated);
-    } catch { toast.error("Error al actualizar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setSaving(false); }
   };
 
   if (loading) return <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>;

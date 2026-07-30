@@ -33,7 +33,7 @@ export default function BudgetsPage() {
     try {
       const data = await api.get<any[]>(`/budgets/patient/${id}`);
       setBudgets(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchBudgets(); }, [id]);
@@ -69,12 +69,15 @@ export default function BudgetsPage() {
       setItems([{ procedure: "", description: "", unitPrice: 0, quantity: 1 }]);
       setForm({ notes: "", validUntil: "" });
       fetchBudgets();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const handleAction = async (budgetId: string, action: string) => {
-    await api.put(`/budgets/${budgetId}/${action}`);
-    fetchBudgets();
+    try {
+      await api.put(`/budgets/${budgetId}/${action}`);
+      toast.success("Acción realizada");
+      fetchBudgets();
+    } catch (e: any) { toast.error(e.message || "Error al realizar acción"); }
   };
 
   const addBudgetItem = async (budgetId: string) => {
@@ -82,19 +85,26 @@ export default function BudgetsPage() {
     if (!item.procedure || !item.description || Number(item.unitPrice) <= 0 || Number(item.quantity) <= 0) {
       return toast.error("Completa el ítem antes de agregarlo");
     }
-    await api.post(`/budgets/${budgetId}/items`, { ...item, unitPrice: Number(item.unitPrice), quantity: Number(item.quantity) });
-    setItemForms((prev) => ({ ...prev, [budgetId]: { procedure: "", description: "", unitPrice: "", quantity: "1" } }));
-    fetchBudgets();
+    try {
+      await api.post(`/budgets/${budgetId}/items`, { ...item, unitPrice: Number(item.unitPrice), quantity: Number(item.quantity) });
+      setItemForms((prev) => ({ ...prev, [budgetId]: { procedure: "", description: "", unitPrice: "", quantity: "1" } }));
+      fetchBudgets();
+    } catch (e: any) { toast.error(e.message || "Error al agregar ítem"); }
   };
 
   const removeBudgetItem = async (budgetId: string, itemId: string) => {
-    await api.delete(`/budgets/${budgetId}/items/${itemId}`);
-    fetchBudgets();
+    try {
+      await api.delete(`/budgets/${budgetId}/items/${itemId}`);
+      fetchBudgets();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar ítem"); }
   };
 
   const deleteBudget = async (budgetId: string) => {
-    await api.delete(`/budgets/${budgetId}`);
-    fetchBudgets();
+    try {
+      await api.delete(`/budgets/${budgetId}`);
+      toast.success("Presupuesto eliminado");
+      fetchBudgets();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar presupuesto"); }
   };
 
   const totalBudget = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);

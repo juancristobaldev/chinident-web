@@ -34,7 +34,7 @@ export default function LocalesPage() {
     try {
       const data = await api.get<any[]>("/locales");
       setLocales(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchLocales(); }, []);
@@ -62,7 +62,7 @@ export default function LocalesPage() {
       }
       setDialogOpen(false);
       fetchLocales();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const toggleActive = async (id: string) => {

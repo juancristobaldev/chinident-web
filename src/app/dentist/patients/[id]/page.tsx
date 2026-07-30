@@ -141,7 +141,7 @@ export default function DentistPatientDetailPage() {
       setEditOpen(false);
       const updated = await api.get<any>(`/patients/${id}`);
       setPatient(updated);
-    } catch { toast.error("Error al actualizar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setSaving(false); }
   };
 
   const handleSaveAnamnesis = async () => {
@@ -166,7 +166,7 @@ export default function DentistPatientDetailPage() {
         familyHistory: mi?.familyHistory || [],
         habits: mi?.habits || [],
       });
-    } catch { toast.error("Error al guardar anamnesis"); } finally { setSavingAnamnesis(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar anamnesis"); } finally { setSavingAnamnesis(false); }
   };
 
   const addToList = (key: string, value: string, setter: (v: string) => void) => {
@@ -193,7 +193,7 @@ export default function DentistPatientDetailPage() {
       const today = new Date().toISOString();
       const apps = await api.get<any[]>(`/appointments?patientId=${id}&date=${today}&view=day`);
       setTodayAppointments(apps);
-    } catch { toast.error("Error al actualizar"); } finally { setActionId(null); }
+    } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setActionId(null); }
   };
 
   const STATUS_ACTIONS: Record<string, { label: string; action: string; variant?: string }[]> = {

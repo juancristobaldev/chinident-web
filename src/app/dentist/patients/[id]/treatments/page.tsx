@@ -35,7 +35,7 @@ export default function TreatmentsPage() {
     try {
       const data = await api.get<any[]>(`/treatments/patient/${id}`);
       setPlans(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchPlans(); }, [id]);
@@ -48,34 +48,43 @@ export default function TreatmentsPage() {
       setShowCreate(false);
       setForm({ name: "", description: "", notes: "" });
       fetchPlans();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const completePlan = async (planId: string) => {
-    await api.post(`/treatments/${planId}/complete`);
-    fetchPlans();
+    try {
+      await api.post(`/treatments/${planId}/complete`);
+      toast.success("Plan completado");
+      fetchPlans();
+    } catch (e: any) { toast.error(e.message || "Error al completar plan"); }
   };
 
   const addStage = async (planId: string) => {
     const stage = stageForms[planId] || { name: "", description: "", toothCode: "" };
     if (!stage.name.trim()) return toast.error("Ingresa el nombre de la etapa");
-    await api.post(`/treatments/${planId}/stages`, {
-      name: stage.name,
-      description: stage.description || undefined,
-      toothCode: stage.toothCode ? Number(stage.toothCode) : undefined,
-    });
-    setStageForms((prev) => ({ ...prev, [planId]: { name: "", description: "", toothCode: "" } }));
-    fetchPlans();
+    try {
+      await api.post(`/treatments/${planId}/stages`, {
+        name: stage.name,
+        description: stage.description || undefined,
+        toothCode: stage.toothCode ? Number(stage.toothCode) : undefined,
+      });
+      setStageForms((prev) => ({ ...prev, [planId]: { name: "", description: "", toothCode: "" } }));
+      fetchPlans();
+    } catch (e: any) { toast.error(e.message || "Error al agregar etapa"); }
   };
 
   const completeStage = async (planId: string, stageId: string) => {
-    await api.put(`/treatments/${planId}/stages/${stageId}`, { status: "COMPLETADO" });
-    fetchPlans();
+    try {
+      await api.put(`/treatments/${planId}/stages/${stageId}`, { status: "COMPLETADO" });
+      fetchPlans();
+    } catch (e: any) { toast.error(e.message || "Error al completar etapa"); }
   };
 
   const removeStage = async (planId: string, stageId: string) => {
-    await api.delete(`/treatments/${planId}/stages/${stageId}`);
-    fetchPlans();
+    try {
+      await api.delete(`/treatments/${planId}/stages/${stageId}`);
+      fetchPlans();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar etapa"); }
   };
 
   if (loading) return <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>;

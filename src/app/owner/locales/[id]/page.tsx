@@ -67,7 +67,7 @@ export default function LocaleDetailPage() {
     try {
       const data = await api.get(`/locales/${id}`);
       setLocale(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   const fetchLocaleRelations = async () => {
@@ -78,7 +78,7 @@ export default function LocaleDetailPage() {
       ]);
       setLocaleDentists(d);
       setLocalePatients(p);
-    } catch { toast.error("Error al cargar datos"); } finally {
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally {
       setLoadingDentists(false);
       setLoadingPatients(false);
     }
@@ -102,30 +102,38 @@ export default function LocaleDetailPage() {
 
   const addBox = async () => {
     if (!newBox.trim()) return;
-    await api.post(`/locales/${id}/boxes`, { name: newBox });
-    toast.success("Box agregado");
-    setNewBox("");
-    fetchLocale();
+    try {
+      await api.post(`/locales/${id}/boxes`, { name: newBox });
+      toast.success("Box agregado");
+      setNewBox("");
+      fetchLocale();
+    } catch (e: any) { toast.error(e.message || "Error al agregar box"); }
   };
 
   const removeBox = async (boxId: string) => {
-    await api.delete(`/locales/${id}/boxes/${boxId}`);
-    toast.success("Box eliminado");
-    fetchLocale();
+    try {
+      await api.delete(`/locales/${id}/boxes/${boxId}`);
+      toast.success("Box eliminado");
+      fetchLocale();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar box"); }
   };
 
   const addSpecialty = async () => {
     if (!newSpecialty.trim()) return;
-    await api.post(`/locales/${id}/specialties`, { name: newSpecialty });
-    toast.success("Especialidad agregada");
-    setNewSpecialty("");
-    fetchLocale();
+    try {
+      await api.post(`/locales/${id}/specialties`, { name: newSpecialty });
+      toast.success("Especialidad agregada");
+      setNewSpecialty("");
+      fetchLocale();
+    } catch (e: any) { toast.error(e.message || "Error al agregar especialidad"); }
   };
 
   const removeSpecialty = async (specialtyId: string) => {
-    await api.delete(`/locales/${id}/specialties/${specialtyId}`);
-    toast.success("Especialidad eliminada");
-    fetchLocale();
+    try {
+      await api.delete(`/locales/${id}/specialties/${specialtyId}`);
+      toast.success("Especialidad eliminada");
+      fetchLocale();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar especialidad"); }
   };
 
   const assignedDentistIds = localeDentists.map((dl: any) => dl.dentist.id);
@@ -152,7 +160,7 @@ export default function LocaleDetailPage() {
       setAssignDentistOpen(false);
       fetchLocaleRelations();
       fetchOptions();
-    } catch { toast.error("Error al asignar"); } finally { setAssignSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al asignar"); } finally { setAssignSaving(false); }
   };
 
   const handleUnlinkDentist = async () => {
@@ -165,7 +173,7 @@ export default function LocaleDetailPage() {
       setUnlinkDentistId(null);
       fetchLocaleRelations();
       fetchOptions();
-    } catch { toast.error("Error al desvincular"); }
+    } catch (e: any) { toast.error(e.message || "Error al desvincular"); }
   };
 
   const handleAssignPatient = async (patientId: string) => {
@@ -178,7 +186,7 @@ export default function LocaleDetailPage() {
       setAssignPatientOpen(false);
       fetchLocaleRelations();
       fetchOptions();
-    } catch { toast.error("Error al asignar"); } finally { setAssignSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al asignar"); } finally { setAssignSaving(false); }
   };
 
   const handleUnlinkPatient = async () => {
@@ -191,7 +199,7 @@ export default function LocaleDetailPage() {
       setUnlinkPatientId(null);
       fetchLocaleRelations();
       fetchOptions();
-    } catch { toast.error("Error al desvincular"); }
+    } catch (e: any) { toast.error(e.message || "Error al desvincular"); }
   };
 
   const handleCreateDentist = async (e: React.FormEvent) => {
@@ -206,7 +214,7 @@ export default function LocaleDetailPage() {
       setDentistForm({ firstName: "", lastName: "", email: "", password: "", phone: "", specialty: "", licenseNumber: "", rut: "" });
       fetchLocaleRelations();
       fetchOptions();
-    } catch { toast.error("Error al crear dentista"); } finally { setSavingDentist(false); }
+    } catch (e: any) { toast.error(e.message || "Error al crear dentista"); } finally { setSavingDentist(false); }
   };
 
   const handleCreatePatient = async (e: React.FormEvent) => {
@@ -224,7 +232,7 @@ export default function LocaleDetailPage() {
       setPatientForm({ firstName: "", lastName: "", email: "", phone: "", rut: "", dob: "", sex: "", address: "", emergencyContact: "", emergencyPhone: "", bloodType: "", occupation: "", referredBy: "", localeIds: [] });
       fetchLocaleRelations();
       fetchOptions();
-    } catch { toast.error("Error al crear paciente"); } finally { setSavingPatient(false); }
+    } catch (e: any) { toast.error(e.message || "Error al crear paciente"); } finally { setSavingPatient(false); }
   };
 
   if (loading) return <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>;

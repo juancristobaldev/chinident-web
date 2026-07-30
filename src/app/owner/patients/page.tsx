@@ -42,9 +42,9 @@ export default function PatientsPage() {
   });
 
   const fetchAll = async () => {
-    try { const p = await api.get<any[]>("/patients"); setPatients(p); } catch { toast.error("Error al cargar datos"); }
-    try { const l = await api.get<any[]>("/locales"); setLocales(l); } catch { toast.error("Error al cargar datos"); }
-    try { const d = await api.get<any[]>("/dentists"); setDentists(d); } catch { toast.error("Error al cargar datos"); }
+    try { const p = await api.get<any[]>("/patients"); setPatients(p); } catch (e: any) { toast.error(e.message || "Error al cargar datos"); }
+    try { const l = await api.get<any[]>("/locales"); setLocales(l); } catch (e: any) { toast.error(e.message || "Error al cargar datos"); }
+    try { const d = await api.get<any[]>("/dentists"); setDentists(d); } catch (e: any) { toast.error(e.message || "Error al cargar datos"); }
     setLoading(false);
   };
 
@@ -56,7 +56,7 @@ export default function PatientsPage() {
     try {
       const data = await api.get<any[]>(`/patients/search?q=${encodeURIComponent(search)}`);
       setPatients(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   const openCreate = () => {
@@ -97,7 +97,7 @@ export default function PatientsPage() {
       toast.success("Paciente creado exitosamente");
       setDialogOpen(false);
       fetchAll();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const columns = [

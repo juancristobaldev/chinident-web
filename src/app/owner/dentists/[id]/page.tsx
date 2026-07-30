@@ -50,8 +50,8 @@ export default function DentistDetailPage() {
       setDentist(d);
       setStats(s);
       setAllLocales(l);
-    } catch {
-      toast.error("Error al cargar datos");
+    } catch (e: any) {
+      toast.error(e.message || "Error al cargar datos");
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ export default function DentistDetailPage() {
       toast.success("Dentista actualizado");
       setEditOpen(false);
       fetchAll();
-    } catch { toast.error("Error al actualizar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setSaving(false); }
   };
 
   const handleUnlinkLocale = async (localeId: string) => {
@@ -117,7 +117,7 @@ export default function DentistDetailPage() {
       toast.success("Local desvinculado");
       setUnlinkConfirm(null);
       fetchAll();
-    } catch { toast.error("Error al desvincular"); }
+    } catch (e: any) { toast.error(e.message || "Error al desvincular"); }
   };
 
   const availableLocales = allLocales.filter(
@@ -137,7 +137,7 @@ export default function DentistDetailPage() {
       toast.success("Local asignado");
       setAssignOpen(false);
       fetchAll();
-    } catch { toast.error("Error al asignar"); } finally { setAssignSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al asignar"); } finally { setAssignSaving(false); }
   };
 
   const filteredEditLocales = allLocales.filter((l) =>

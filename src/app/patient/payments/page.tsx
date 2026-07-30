@@ -61,7 +61,9 @@ export default function PatientPaymentsPage() {
         </Card>
       </div>
 
-      {payments.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>
+      ) : payments.length === 0 ? (
         <Card><CardContent className="py-10 text-center text-muted-foreground">No tienes pagos registrados.</CardContent></Card>
       ) : (
         <div className="space-y-2">
@@ -80,7 +82,7 @@ export default function PatientPaymentsPage() {
             </Card>
           ))}
         </div>
-      )}
+      ))}
     </div>
   );
 }

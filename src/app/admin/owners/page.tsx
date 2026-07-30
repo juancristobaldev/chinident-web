@@ -37,10 +37,15 @@ export default function OwnersPage() {
     try {
       const data = await api.get<any[]>("/admin/tenants");
       setTenants(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchTenants(); }, []);
+
+  const openCreate = () => {
+    setForm({ name: "", rut: "", businessName: "", email: "", phone: "", address: "", ownerFirstName: "", ownerLastName: "", ownerPassword: "" });
+    setDialogOpen(true);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,17 +55,23 @@ export default function OwnersPage() {
       setDialogOpen(false);
       setForm({ name: "", rut: "", businessName: "", email: "", phone: "", address: "", ownerFirstName: "", ownerLastName: "", ownerPassword: "" });
       fetchTenants();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const handleSuspend = async (id: string) => {
-    await api.delete(`/admin/tenants/${id}`);
-    fetchTenants();
+    try {
+      await api.delete(`/admin/tenants/${id}`);
+      toast.success("Clínica suspendida");
+      fetchTenants();
+    } catch (e: any) { toast.error(e.message || "Error al suspender"); }
   };
 
   const handleActivate = async (id: string) => {
-    await api.post(`/admin/tenants/${id}/activate`);
-    fetchTenants();
+    try {
+      await api.post(`/admin/tenants/${id}/activate`);
+      toast.success("Clínica activada");
+      fetchTenants();
+    } catch (e: any) { toast.error(e.message || "Error al activar"); }
   };
 
   const columns = [
@@ -120,7 +131,7 @@ export default function OwnersPage() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" /> Nueva Clínica</Button>
+            <Button onClick={openCreate}><Plus className="mr-2 h-4 w-4" /> Nueva Clínica</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader><DialogTitle>Registrar Nueva Clínica</DialogTitle></DialogHeader>

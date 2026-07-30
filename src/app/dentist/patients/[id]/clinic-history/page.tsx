@@ -169,13 +169,15 @@ export default function ClinicHistoryPage() {
       toast.success(editing ? "Registro actualizado" : "Registro creado");
       setDialogOpen(false);
       fetchAll();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const deleteRecord = async (recordId: string) => {
-    await api.delete(`/clinical-records/${recordId}`);
-    toast.success("Registro eliminado");
-    fetchAll();
+    try {
+      await api.delete(`/clinical-records/${recordId}`);
+      toast.success("Registro eliminado");
+      fetchAll();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar"); }
   };
 
   if (loading) return <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>;

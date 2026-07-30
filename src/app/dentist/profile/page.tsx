@@ -34,7 +34,7 @@ export default function DentistProfilePage() {
     try {
       const data = await api.get("/dentists/me");
       setProfile(data);
-    } catch { toast.error("Error al cargar perfil"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar perfil"); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchProfile(); }, []);
@@ -65,7 +65,7 @@ export default function DentistProfilePage() {
       toast.success("Perfil actualizado");
       setEditOpen(false);
       fetchProfile();
-    } catch { toast.error("Error al actualizar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setSaving(false); }
   };
 
   if (loading) return <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>;

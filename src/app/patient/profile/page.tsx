@@ -76,8 +76,8 @@ export default function PatientProfilePage() {
         dob: form.dob || undefined,
       });
       toast.success("Perfil actualizado correctamente");
-    } catch {
-      toast.error("Error al actualizar perfil");
+    } catch (e: any) {
+      toast.error(e.message || "Error al actualizar perfil");
     } finally {
       setSaving(false);
     }

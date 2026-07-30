@@ -23,8 +23,8 @@ export default function ForgotPasswordPage() {
     try {
       await api.post("/auth/forgot-password", { email });
       setSent(true);
-    } catch {
-      toast.error("Error al enviar el enlace");
+    } catch (e: any) {
+      toast.error(e.message || "Error al enviar el enlace");
     } finally {
       setLoading(false);
     }

@@ -58,9 +58,14 @@ export default function EvolutionsPage() {
       toast.success(editing ? "Evolución actualizada" : "Evolución creada");
       setDialogOpen(false);
       fetchEvolutions();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
-  const deleteEvolution = async (recordId: string) => { await api.delete(`/clinical-records/${recordId}`); fetchEvolutions(); };
+  const deleteEvolution = async (recordId: string) => {
+    try {
+      await api.delete(`/clinical-records/${recordId}`);
+      fetchEvolutions();
+    } catch (e: any) { toast.error(e.message || "Error al eliminar"); }
+  };
 
   if (loading) return <div className="flex items-center justify-center py-20"><Spinner className="h-8 w-8" /></div>;
 

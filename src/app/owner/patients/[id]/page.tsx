@@ -164,7 +164,7 @@ export default function PatientDetailPage() {
       setHistory(updated);
       setLocales(l);
       setDentists(d);
-    } catch { toast.error("Error al actualizar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setSaving(false); }
   };
 
   const handleSaveAnamnesis = async () => {
@@ -191,7 +191,7 @@ export default function PatientDetailPage() {
         familyHistory: mi?.familyHistory || [],
         habits: mi?.habits || [],
       });
-    } catch { toast.error("Error al guardar anamnesis"); } finally { setSavingAnamnesis(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar anamnesis"); } finally { setSavingAnamnesis(false); }
   };
 
   const addToList = (key: string, value: string, setter: (v: string) => void) => {

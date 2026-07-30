@@ -42,11 +42,11 @@ export default function DentistPatientsPage() {
       const endpoint = q ? `/patients/search?q=${encodeURIComponent(q)}` : "/patients";
       const data = await api.get<any[]>(endpoint);
       setPatients(data);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   const fetchLocales = async () => {
-    try { const data = await api.get<LocaleOption[]>("/locales"); setLocales(data); } catch { toast.error("Error al cargar locales"); }
+    try { const data = await api.get<LocaleOption[]>("/locales"); setLocales(data); } catch (e: any) { toast.error(e.message || "Error al cargar locales"); }
   };
 
   useEffect(() => { fetchPatients(); fetchLocales(); }, []);
@@ -83,7 +83,7 @@ export default function DentistPatientsPage() {
       toast.success("Paciente creado");
       setDialogOpen(false);
       fetchPatients(search);
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const columns = [

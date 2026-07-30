@@ -60,8 +60,8 @@ export default function SettingsPage() {
         prev.map((s) => (edited[s.key] !== undefined ? { ...s, value: edited[s.key] } : s))
       );
       setEdited({});
-    } catch {
-      toast.error("Error al guardar configuración");
+    } catch (e: any) {
+      toast.error(e.message || "Error al guardar configuración");
     } finally {
       setSaving(false);
     }

@@ -39,7 +39,7 @@ export default function OwnerFinancesPage() {
       ]);
       setPayments(p.slice(0, 30));
       setSummary(s);
-    } catch { toast.error("Error al cargar datos"); } finally { setLoading(false); }
+    } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function OwnerFinancesPage() {
       setShowForm(false);
       setForm({ patientId: "", amount: 0, method: "EFECTIVO" });
       fetchAll();
-    } catch { toast.error("Error al guardar"); } finally { setSaving(false); }
+    } catch (e: any) { toast.error(e.message || "Error al guardar"); } finally { setSaving(false); }
   };
 
   const methodLabels: Record<string, string> = {
