@@ -32,7 +32,7 @@ export default function OwnerDetailPage() {
   });
 
   useEffect(() => {
-    api.get(`/admin/tenants/${id}`)
+    api.get<any>(`/admin/tenants/${id}`)
       .then(setTenant)
       .catch(() => { toast.error("Error al cargar datos"); })
       .finally(() => setLoading(false));
@@ -62,7 +62,7 @@ export default function OwnerDetailPage() {
       await api.put(`/users/${tenant.owner.id}`, payload);
       toast.success("Owner actualizado");
       setEditOpen(false);
-      const updated = await api.get(`/admin/tenants/${id}`);
+      const updated = await api.get<any>(`/admin/tenants/${id}`);
       setTenant(updated);
     } catch (e: any) { toast.error(e.message || "Error al actualizar"); } finally { setSaving(false); }
   };

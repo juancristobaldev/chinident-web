@@ -65,7 +65,7 @@ export default function LocaleDetailPage() {
 
   const fetchLocale = async () => {
     try {
-      const data = await api.get(`/locales/${id}`);
+      const data = await api.get<any>(`/locales/${id}`);
       setLocale(data);
     } catch (e: any) { toast.error(e.message || "Error al cargar datos"); } finally { setLoading(false); }
   };

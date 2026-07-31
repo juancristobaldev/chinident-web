@@ -9,6 +9,16 @@ import { formatDate } from "@/lib/utils";
 import { DollarSign } from "lucide-react";
 import { toast } from "sonner";
 
+function calculateTotal(list: any[], status: string): number {
+  let total = 0;
+  for (const item of list) {
+    if (item.status === status) {
+      total += Number(item.amount) || 0;
+    }
+  }
+  return total;
+}
+
 export default function PatientPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,12 +33,8 @@ export default function PatientPaymentsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalPaid = payments
-    .filter((p) => p.status === "PAGADO")
-    .reduce((sum, p) => sum + Number(p.amount), 0);
-  const totalPending = payments
-    .filter((p) => p.status === "PENDIENTE")
-    .reduce((sum, p) => sum + Number(p.amount), 0);
+  const totalPaid = calculateTotal(payments, "PAGADO");
+  const totalPending = calculateTotal(payments, "PENDIENTE");
 
   return (
     <div className="space-y-6">
@@ -82,7 +88,7 @@ export default function PatientPaymentsPage() {
             </Card>
           ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }

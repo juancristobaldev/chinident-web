@@ -43,8 +43,8 @@ export default function DentistDetailPage() {
   const fetchAll = async () => {
     try {
       const [d, s, l] = await Promise.all([
-        api.get(`/dentists/${id}`),
-        api.get(`/dentists/${id}/stats`),
+        api.get<any>(`/dentists/${id}`),
+        api.get<any>(`/dentists/${id}/stats`),
         api.get<LocaleOption[]>("/locales"),
       ]);
       setDentist(d);

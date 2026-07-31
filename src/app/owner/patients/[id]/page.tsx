@@ -67,7 +67,7 @@ export default function PatientDetailPage() {
 
   useEffect(() => {
     Promise.all([
-      api.get(`/patients/${id}/history`),
+      api.get<any>(`/patients/${id}/history`),
       api.get<LocaleOption[]>("/locales"),
       api.get<DentistOption[]>("/dentists"),
     ])
@@ -157,7 +157,7 @@ export default function PatientDetailPage() {
       toast.success("Paciente actualizado");
       setEditOpen(false);
       const [updated, l, d] = await Promise.all([
-        api.get(`/patients/${id}/history`),
+      api.get<any>(`/patients/${id}/history`),
         api.get<LocaleOption[]>("/locales"),
         api.get<DentistOption[]>("/dentists"),
       ]);
@@ -174,7 +174,7 @@ export default function PatientDetailPage() {
         ...anamnesis,
       });
       toast.success("Anamnesis actualizada");
-      const updated = await api.get(`/patients/${id}/history`);
+      const updated = await api.get<any>(`/patients/${id}/history`);
       setHistory(updated);
       const mi = updated.patient.medicalInfo;
       setAnamnesis({
